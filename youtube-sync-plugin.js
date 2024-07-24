@@ -1,5 +1,6 @@
 jQuery(document).ready(function($) {
     function fetchVideos(pageToken = '') {
+        showLoader();
         $.post(youtubeSyncPlugin.ajax_url, {
             action: 'youtube_sync_plugin_fetch_videos',
             page_token: pageToken
@@ -36,7 +37,7 @@ jQuery(document).ready(function($) {
                 }
                 for (var page = 1; page <= totalPages; page++) {
                     var pageTokenAttr = page === 1 ? '' : nextPageToken;
-                    html += '<a href="#" class="page-numbers" data-page-token="' + pageTokenAttr + '" data-page="' + page + '">' + page + '</a>';
+                    html += '<a href="#" class="page-numbers ' + (pageToken === '' && page === 1 ? 'current' : '') + '" data-page-token="' + pageTokenAttr + '" data-page="' + page + '">' + page + '</a>';
                 }
                 if (nextPageToken) {
                     html += '<a href="#" class="page-numbers" data-page-token="' + nextPageToken + '" data-page="' + totalPages + '">Last &raquo;</a>';
@@ -45,8 +46,10 @@ jQuery(document).ready(function($) {
                 html += '</div>';
 
                 $('#video-list').html(html);
+                hideLoader();
             } else {
                 $('#video-list').html('<div class="error"><p>' + response.data + '</p></div>');
+                hideLoader();
             }
         });
     }
@@ -76,6 +79,8 @@ jQuery(document).ready(function($) {
             };
         });
 
+        showLoader();
+
         $.post(youtubeSyncPlugin.ajax_url, {
             action: 'youtube_sync_plugin_import_videos',
             video_ids: Object.keys(selectedVideos),
@@ -86,7 +91,16 @@ jQuery(document).ready(function($) {
                 fetchVideos();
             } else {
                 alert('Failed to import videos');
+                hideLoader();
             }
         });
     });
+
+    function showLoader() {
+        $('body').append('<div id="loader-overlay"><div class="loader"></div></div>');
+    }
+
+    function hideLoader() {
+        $('#loader-overlay').remove();
+    }
 });

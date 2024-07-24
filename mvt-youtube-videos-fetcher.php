@@ -3,7 +3,7 @@
 Plugin Name: YouTube Sync Plugin
 Description: Sync YouTube videos and thumbnails to WordPress database.
 Version: 1.0
-Author: Your Name
+Author: Harish Kumar
 */
 
 // Hook to add admin menu
@@ -238,10 +238,38 @@ function youtube_sync_plugin_enqueue_scripts($hook) {
     // Add inline CSS
     add_action('admin_head', function() {
         echo '<style>
-            .pagination {
+            #loader-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
                 display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .loader {
+                border: 16px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 16px solid #3498db;
+                width: 120px;
+                height: 120px;
+                animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .pagination {
+                display: inline-block;
                 justify-content: center;
                 margin: 20px 0;
+                width: 100%;
+                overflow-y: scroll;
             }
             .pagination a {
                 padding: 8px 12px;
@@ -266,6 +294,10 @@ function youtube_sync_plugin_enqueue_scripts($hook) {
             }
             .not-imported {
                 color: red;
+            }
+            #import-selected-videos {
+                float:right;
+                margin-bottom:5px;
             }
         </style>';
     });
