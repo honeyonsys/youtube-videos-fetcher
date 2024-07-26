@@ -265,9 +265,10 @@ function youtube_sync_plugin_enqueue_scripts($hook) {
                 100% { transform: rotate(360deg); }
             }
             .pagination {
-                display: inline-block;
+                display: list-item;
                 justify-content: center;
                 margin: 20px 0;
+                padding: 10px;
                 width: 100%;
                 overflow-y: scroll;
             }

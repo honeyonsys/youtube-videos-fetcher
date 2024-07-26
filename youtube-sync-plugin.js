@@ -33,14 +33,14 @@ jQuery(document).ready(function($) {
                 html += '<div class="pagination">';
 
                 if (pageToken !== '') {
-                    html += '<a href="#" class="page-numbers" data-page-token="" data-page="1">&laquo; First</a>';
+                    html += '<a href="#" class="page-numbers" data-page-token="" data-page="1">First</a>';
                 }
                 for (var page = 1; page <= totalPages; page++) {
                     var pageTokenAttr = page === 1 ? '' : nextPageToken;
                     html += '<a href="#" class="page-numbers ' + (pageToken === '' && page === 1 ? 'current' : '') + '" data-page-token="' + pageTokenAttr + '" data-page="' + page + '">' + page + '</a>';
                 }
                 if (nextPageToken) {
-                    html += '<a href="#" class="page-numbers" data-page-token="' + nextPageToken + '" data-page="' + totalPages + '">Last &raquo;</a>';
+                    html += '<a href="#" class="page-numbers" data-page-token="' + nextPageToken + '" data-page="' + totalPages + '">Last</a>';
                 }
 
                 html += '</div>';
