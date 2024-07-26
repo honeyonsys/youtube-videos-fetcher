@@ -147,7 +147,9 @@ function youtube_sync_plugin_fetch_videos() {
         if (isset($item->snippet->resourceId->videoId)) {
             $video_id = $item->snippet->resourceId->videoId;
             $title = $item->snippet->title;
+            $description = $item->snippet->description;
             $thumbnail = $item->snippet->thumbnails->default->url;
+            $publishedAt = $item->snippet->publishedAt;
 
             // Check if the video already exists in the database
             $existing_video = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE video_id = %s", $video_id));
@@ -156,6 +158,8 @@ function youtube_sync_plugin_fetch_videos() {
                 'video_id' => $video_id,
                 'title' => $title,
                 'thumbnail' => $thumbnail,
+                'description' =>$description,
+                'publishedAt' => $publishedAt,
                 'status' => $existing_video > 0 ? 'Imported' : 'Not Imported'
             );
         }
@@ -182,19 +186,49 @@ function youtube_sync_plugin_import_videos() {
     foreach ($video_ids as $video_id) {
         if (isset($videos[$video_id])) {
             $video = $videos[$video_id];
-            $wpdb->replace(
-                $table_name,
-                array(
-                    'video_id' => $video['video_id'],
-                    'title' => $video['title'],
-                    'thumbnail' => $video['thumbnail']
-                ),
-                array(
-                    '%s',
-                    '%s',
-                    '%s'
-                )
+
+            $iso8601_date = $video['publishedAt']; // Assuming this is the ISO 8601 date
+            $datetime = new DateTime($iso8601_date);
+            $formatted_date = $datetime->format('Y-m-d H:i:s');
+
+            // $wpdb->replace(
+            //     $table_name,
+            //     array(
+            //         'video_id' => $video['video_id'],
+            //         'title' => $video['title'],
+            //         'thumbnail' => $video['thumbnail'],
+            //         'description' => $video['description'],
+            //         'publishedAt' =>  $formatted_date
+            //     ),
+            //     array(
+            //         '%s',
+            //         '%s',
+            //         '%s',
+            //         '%s',
+            //         '%s'
+            //     )
+            // );
+
+            $sql = $wpdb->prepare(
+                "
+                INSERT INTO $table_name (video_id, title, thumbnail, description, publishedAt)
+                VALUES (%s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                    title = VALUES(title),
+                    thumbnail = VALUES(thumbnail),
+                    description = VALUES(description),
+                    publishedAt = VALUES(publishedAt)
+                ",
+               $video['video_id'], $video['title'], $video['thumbnail'], $video['description'], $formatted_date
             );
+            
+            $wpdb->query($sql);
+
+
+
+
+
+
         }
     }
 
@@ -211,6 +245,8 @@ function youtube_sync_plugin_create_table() {
         video_id varchar(50) NOT NULL,
         title text NOT NULL,
         thumbnail varchar(255) DEFAULT '' NOT NULL,
+        description text,
+        publishedAt datetime,
         PRIMARY KEY  (id),
         UNIQUE KEY video_id (video_id)
     ) $charset_collate;";
@@ -302,4 +338,70 @@ function youtube_sync_plugin_enqueue_scripts($hook) {
             }
         </style>';
     });
+
+}
+
+
+
+function enqueue_my_scripts() {
+
+    wp_enqueue_style( 'yt-style', plugin_dir_url(__FILE__)  . 'assets/css/style.css', array(), time(), 'all' );
+    wp_enqueue_script('my-infinite-scroll',   plugin_dir_url(__FILE__) . 'assets/js/infinite-scroll.js', array('jquery'), null, true);
+    wp_enqueue_script('my-fontawesome',   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css', null, true);
+
+    wp_localize_script('my-infinite-scroll', 'myAjax', array(
+        'ajaxurl' => admin_url('admin-ajax.php')
+    ));
+}
+add_action('wp_enqueue_scripts', 'enqueue_my_scripts');
+
+// Shortcode function to display initial data
+
+function display_video_data() {
+
+    ob_start();
+ 
+    ?>
+       <div class="listing-sec view-all-outer" data-selected-cat="">
+           <div id="append_video_content" class="tiles-area filter_data_section "> </div>
+      </div>
+      <div class="loader-wrapper" style="display: none;"><div class="loader_inkish"><img src="https://inkish.tv/wp-content/plugins/the-preloader/images/preloader.GIF" alt="Loader"></div></div>
+    <?php
+ 
+
+    return ob_get_clean();
+}
+
+
+// REST API endpoint to fetch additional data
+function fetch_videos_data() {
+    global $wpdb;
+
+    $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+    $per_page = 20;
+    $offset = ($page - 1) * $per_page;
+    $table_name = $wpdb->prefix . 'youtube_videos';
+    $query = $wpdb->prepare("SELECT * FROM $table_name ORDER BY publishedAt DESC LIMIT %d OFFSET %d", $per_page, $offset);
+    $results = $wpdb->get_results($query);
+
+    // Return results as JSON
+    wp_send_json($results);
+}
+add_action('wp_ajax_fetch_videos_data', 'fetch_videos_data');
+add_action('wp_ajax_nopriv_fetch_videos_data', 'fetch_videos_data');
+
+// Register the shortcode
+function register_video_shortcode() {
+    add_shortcode('video_data', 'display_video_data');
+}
+add_action('init', 'register_video_shortcode');
+
+
+
+function truncate_description($text, $chars = 100) {
+    if (strlen($text) <= $chars) {
+        return $text;
+    }
+    $truncated = substr($text, 0, $chars) . '...';
+    return $truncated;
 }

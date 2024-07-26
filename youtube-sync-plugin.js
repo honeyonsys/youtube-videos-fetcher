@@ -15,15 +15,22 @@ jQuery(document).ready(function($) {
                 var html = '<form method="post" action="">';
                 html += '<input type="submit" id="import-selected-videos" class="button button-primary" value="Import Selected Videos" />';
                 html += '<table class="wp-list-table widefat fixed striped">';
-                html += '<thead><tr><th><input type="checkbox" id="select-all" /></th><th>Video ID</th><th>Title</th><th>Thumbnail</th><th>Status</th></tr></thead><tbody>';
+                html += '<thead><tr><th><input type="checkbox" id="select-all" /></th><th>Video ID</th><th>Title</th><th>Description</th><th>Thumbnail</th><th>Published At</th><th>Status</th></tr></thead><tbody>';
 
                 for (var i = 0; i < videos.length; i++) {
                     var video = videos[i];
                     html += '<tr>';
-                    html += '<td><input type="checkbox" class="video-checkbox" data-video-id="' + video.video_id + '" data-video-title="' + video.title + '" data-video-thumbnail="' + video.thumbnail + '" /></td>';
+                    html += '<td><input type="checkbox" class="video-checkbox" ' +
+                    'data-video-id="' + video.video_id + '" ' +
+                    'data-video-title="' + video.title + '" ' +
+                    'data-video-thumbnail="' + video.thumbnail + '" ' +
+                    'data-video-description="' + video.description + '" ' +
+                    'data-video-publishedAt="' + video.publishedAt + '" /></td>';            
                     html += '<td>' + video.video_id + '</td>';
                     html += '<td>' + video.title + '</td>';
+                    html += '<td>' + truncateDescription(video.description,100) + '</td>';
                     html += '<td><img src="' + video.thumbnail + '" width="100" /></td>';
+                    html += '<td>' + video.publishedAt + '</td>';
                     html += '<td class="' + (video.status === 'Imported' ? 'imported' : 'not-imported') + '">' + video.status + '</td>';
                     html += '</tr>';
                 }
@@ -75,7 +82,9 @@ jQuery(document).ready(function($) {
             selectedVideos[videoId] = {
                 video_id: videoId,
                 title: $(this).data('video-title'),
-                thumbnail: $(this).data('video-thumbnail')
+                thumbnail: $(this).data('video-thumbnail'),
+                description: $(this).data('video-description'),
+                publishedAt: $(this).data('video-publishedAt')
             };
         });
 
@@ -89,6 +98,7 @@ jQuery(document).ready(function($) {
             if (response.success) {
                 alert(response.data);
                 fetchVideos();
+                hideLoader();
             } else {
                 alert('Failed to import videos');
                 hideLoader();
@@ -103,4 +113,23 @@ jQuery(document).ready(function($) {
     function hideLoader() {
         $('#loader-overlay').remove();
     }
+
+
+
+
+
+// Function to truncate the description
+function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+        return description.substring(0, maxLength) + '...';
+    }
+    return description;
+}
+
+
 });
+
+
+
+
+
