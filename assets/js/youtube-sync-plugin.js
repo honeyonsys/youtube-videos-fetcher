@@ -125,6 +125,7 @@ jQuery(document).ready(function($) {
         }, function(response) {
             if (response.success) {
 
+                fetchVideos();
                 hideLoader();
 
                 Swal.fire({
