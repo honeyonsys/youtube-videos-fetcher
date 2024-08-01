@@ -1,153 +1,92 @@
-
-.tiles-area.filter_data_section{
-  display:flex;
-  flex-wrap: wrap;
-  gap:25px;
-}
-
- .content-main-card {
-    flex:0 0 17.8%;
-    cursor:pointer;
-}
-
-.content-card h4 {
-    margin: 0 0 6px 0;
-    font-weight: bold;
-    color: #000;
-    font-size: 18px;
-    line-height: 22px;
-    height: 24px;
-    overflow: hidden;
-}
-
-.content-card p {
-    font-size: 14px;
-    margin-bottom: 0px;
-    word-break: break-word;
-    margin-top: 0;
-    line-height: 22px;
-}
-.content-card {
-    background-color: #d5d5d5;
-    padding: 15px;
-    margin-top: 0px;
-    height: 165px;
-    overflow: hidden;
-}
-
-.content-main-card-img a img{
-    width:100%;
-}
-.listing-sec.view-all-outer{
-   max-width:100%;
-   padding: 0 25px;
-}
-.content-card a{
-    text-decoration:none;
-}
-.content-main-card-img{
-    position: relative;
-}
-.content-main-card .language-icon {
-    display:none;
-    position: absolute;
-    left: 10px;
-    top: 15px;
-    z-index: 1;
-}
-.language-icon>span {
-    color: #FFF;
-    font-size: 17px;
-    background: #5d8590;
-    padding: 1px 5px;
-    font-family: 'Impact';
-    text-transform: uppercase;
-    margin-bottom: 3px;
-    display: inline-block;
-}
-.language-icon>span:nth-child(2) {
-    background: #51504c;
-}
-.language-icon>span:nth-child(3) {
-    background: #6d7b7e;
-}
-.language-icon>span:nth-child(4) {
-    background: #a3d0df;
-}
-
-.yt_video_modal{
-    display:none;
-}
-
-.modal {
+#loader-overlay {
     position: fixed;
-    z-index: 1050;
-    display: none;
-    overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-    outline: 0;
-    width: 75%;
-    height: 75%;
-    margin: 0 auto;
-    top: 50%;
-    left: 50%;
-    right: 0;
-    bottom: 0;
-    transform: translate(-50%, -50%);
-}
-.modal-header {
-    padding: 0;
-    border-bottom: 0;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 50;
-}
-.modal-header .close {
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.5);
-    height: 25px;
-    width: 25px;
-    z-index: 50;
-    color:#fff;
-}
-.embed-responsive .embed-responsive-item, .embed-responsive iframe, .embed-responsive embed, .embed-responsive object, .embed-responsive video {
-    position: absolute;
     top: 0;
-    bottom: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    border: 0;
-} 
-
-@media(max-width:767px) {
-    .modal {
-        height: 50%;
-     }
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-
-span.thumb-play-btn {
-    background: #2dbad8;
-    color: #fff !important;
-    width: 35px;
-    height: 35px;
-    display: none;
-    text-align: center;
+.loader {
+    border: 16px solid #f3f3f3;
     border-radius: 50%;
-    line-height: 37px;
-    font-size: 12px;
-    text-align: center;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    left: 0;
-    top: 42%;
-    z-index: 999;
-    transition: all 2s;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
 }
-.content-main-card:hover .thumb-play-btn {
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.pagination {
+    display: list-item;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 10px;
+    width: 100%;
+    overflow-y: scroll;
+}
+.pagination a {
+    padding: 8px 12px;
+    margin: 0 4px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #0073aa;
+    background-color: #f1f1f1;
+    border-radius: 3px;
+}
+.pagination a:hover {
+    background-color: #0073aa;
+    color: #fff;
+}
+.pagination a.current {
+    background-color: #0073aa;
+    color: #fff;
+    pointer-events: none;
+}
+.imported {
+    color: green;
+}
+.not-imported {
+    color: red;
+}
+#import-selected-videos {
+    float:right;
+    margin-bottom:5px;
+}
+
+.badge {
+    box-sizing: border-box;
     display: inline-block;
-    transition: all 2s;
+    color:  #ffffff;
+    border-radius: 3rem; 
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 400;
+    padding: .05rem .8rem .1rem;
+    line-height: inherit;
+}
+ .badge--danger {
+    background-color: #e74c3c;
+}   
+ .badge--success {
+     background-color: #2ecc71;
+}
+   .badge--info {
+    background-color: #3498db;
+}    
+
+.badge--smaller {
+    font-size: .7rem;
+    padding: .05rem .4rem .15rem;
+}
+
+.my-custom-confirm-button{
+  background-color: #4f94d4;
 }
